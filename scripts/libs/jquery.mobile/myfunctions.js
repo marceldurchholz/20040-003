@@ -411,7 +411,7 @@ function collectUserArray_facebook(fb_userid) {
 		success: function(data) {
 			// document.getElementById("userName").innerHTML = data.name;
 			// document.getElementById("userPic").src = 'http://graph.facebook.com/' + data.id + '/picture?type=small';
-			$.when( lao.save_local('me',data), dao.save_local('me',data) ).done(
+			$.when( lao.save_local('user',data), dao.save_local('user',data) ).done(
 				function( lao_result, dao_result ) {
 					d.resolve(data);
 					// d.resolve(_this.cardsArray);
@@ -638,7 +638,7 @@ function forceLogin() {
 		}).done(function(userData) {
 			// if (window.heavyDebug) console.log('log in forced via MobileRouter.js >> username '+userData.username);
 			// if (window.heavyDebug) console.log(userData);
-			$.when( lao.save_local('me',userData), dao.save_local('me',userData) ).done(
+			$.when( lao.save_local('user',userData), dao.save_local('user',userData) ).done(
 				function( lao_result, dao_result ) {
 					window.me = userData;
 					// d.resolve(data);
@@ -2067,7 +2067,7 @@ function sendAnonymRegister(e) {
 function sendLoginClicked(e) {
 	$.when( sendLogin(e) ) .done(function(userData){
 		// if (window.heavyDebug) console.log('$.when( sendRegister(e) ) .done(function(){... >> ');
-		$.when( lao.save_local('me',userData), dao.save_local('me',userData) ).done(
+		$.when( lao.save_local('user',userData), dao.save_local('user',userData) ).done(
 			function( lao_result, dao_result ) {
 				window.me = userData;
 				if (window.heavyDebug) console.log('******************************************** TEST ********************************************');
@@ -2871,9 +2871,95 @@ function collectUserData(userid) {
 										}
 									);
 									*/
-									$.when( lao.save_local('me',_this.userArray), dao.save_local('me',_this.userArray) ).done(
+									$.when( lao.save_local('user',_this.userArray), dao.save_local('user',_this.userArray) ).done(
 										function( lao_result, dao_result ) {
 											if (window.heavyDebug) console.log('user cached in local.storage and evtl. saved offline offline db');
+											d.resolve(_this.userArray);
+										}
+									);
+								},
+								error:function (xhr, ajaxOptions, thrownError) {
+									if (window.heavyDebug) console.log(xhr.responseText);
+								}
+							});
+						}
+					});
+				});
+			}
+			
+		}
+	);
+	return d.promise();
+}
+
+function collectUserdetailsData(userid) {
+	var _this = this;
+	var d = $.Deferred();
+	_this.interestsArray = new Array();
+	$.when( collectInterestsData() ).done(
+		function( interests ) {
+			// alert('$.when( collectInterestsData() ).done(...');
+			if (interests == undefined) interests=[];
+			_this.interestsArray = interests;
+			// if (window.heavyDebug) console.log('_this.interestsArray');
+			// if (window.heavyDebug) console.log(_this.interestsArray);
+			// d.resolve(_this.userArray);
+			// if (window.heavyDebug) console.log('end deleteFlowClicked');
+			_this.userdetailsArray = new Array();
+			var userdetails = lao.get_local('userdetails');
+			if (userdetails!=undefined) {
+				_this.userdetailsArray = userdetails;
+				d.resolve(_this.userdetailsArray);
+			}
+			else {
+				var requestUrl = dpd_server+"users?deleted=false&id="+userid;
+				// if (window.system.master!=true && window.me.id!=window.system.owner.id && window.me.master != true) requestUrl = requestUrl + "&sponsor="+window.system.owner.id;
+				if (window.heavyDebug) console.log('requestUrl: '+requestUrl);
+				/*
+				//// if (window.system.master!=true && window.me.id!=window.system.owner.id) requestUrl = requestUrl + "&sponsor="+window.system.owner.id;
+				// if (window.me.id!=window.system.owner.id || window.me.master!=true) requestUrl = requestUrl + "&sponsor="+window.system.owner.id;
+				alert('window.me.id: '+window.me.id);
+				alert('window.me.master: '+window.me.master);
+				alert('window.system.master: '+window.system.master);
+				*/
+				$.ajax({
+					url: requestUrl,
+					async: false
+				}).done(function(result) {
+					var userdetailsData = new Object();
+					userdetailsData.mydata = result;
+					_.each(userdetailsData, function(userdetails, index, list) {
+						var comparedInterests = new Array();
+						var isel = 0;
+						$.each( _this.interestsArray, function( key, obj ) {
+							var isel = $.inArray( obj.name, userdetails.interests );
+							if (isel>-1) obj.sel = true;
+							_this.interestsArray[key] = obj;
+						});
+						var exists = 1;
+						if (exists>-1 || userdetails.sponsor == window.me.id) {
+							userdetails.ccat = 'user';
+							userdetails.icon = 'images/icon-multimedia-60.png';
+							userdetails.href = '#users/details/view/'+userdetails.id;
+							var sponsor = userdetails.sponsor;
+							$.ajax({
+								url: dpd_server+'users/?id='+sponsor,
+								async: true,
+								success: function(data) {
+									userdetails.sponsordata = data;
+									userdetails.compared_interests = _this.interestsArray;
+									_this.userArray = userdetails;
+									/*
+									$.when( lao.save_local('user',_this.userArray) ).done(
+										function( lao_result ) {
+											d.resolve(_this.userArray);
+											// if (window.heavyDebug) console.log('end deleteFlowClicked');
+										}
+									);
+									*/
+									$.when( lao.save_local('userdetails',_this.userArray), dao.save_local('userdetails',_this.userArray) ).done(
+										function( lao_result, dao_result ) {
+											if (window.heavyDebug) console.log('userdetails cached in local.storage and evtl. saved offline offline db');
 											d.resolve(_this.userArray);
 										}
 									);
