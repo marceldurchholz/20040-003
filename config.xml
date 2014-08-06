@@ -100,20 +100,22 @@
 	<preference name="KeyboardDisplayRequiresUserAction" value="true" />
 	<preference name="HideKeyboardFormAccessoryBar" value="true" />
 	<preference name="KeyboardShrinksView" value="white" />
-    <preference name="SuppressesIncrementalRendering" value="false" />
-    <preference name="TopActivityIndicator" value="gray" />
-    <preference name="EnableLocation" value="true" />
-    <preference name="EnableViewportScale" value="true" />
+	<preference name="SuppressesIncrementalRendering" value="true" />
+	<preference name="TopActivityIndicator" value="gray" />
+    <!-- <preference name="EnableLocation" value="true" /> -->
+    <!-- <preference name="EnableViewportScale" value="true" /> -->
     <preference name="AutoHideSplashScreen" value="true" />
     <preference name="MediaPlaybackRequiresUserAction" value="false" />
     <preference name="AllowInlineMediaPlayback" value="false" />
-    <preference name="BackupWebStorage" value="cloud" />
-    <preference name="FadeSplashScreen" value="true" />
-    <preference name="FadeSplashScreenDuration" value="3" />
+    <!-- <preference name="BackupWebStorage" value="cloud" /> -->
+    <preference name="FadeSplashScreen" value="false" />
+    <!--
+	<preference name="FadeSplashScreenDuration" value="0" />
 	<preference name="GapBetweenPages" value="0"/>
 	<preference name="PageLength" value="0"/>
 	<preference name="PaginationBreakingMode" value="page"/>
 	<preference name="PaginationMode" value="unpaginated"/>
+	-->
 	
     <icon src="icon.png" />
     <icon src="res/icon/android/icon-36-ldpi.png"   gap:platform="android"    gap:density="ldpi" />
