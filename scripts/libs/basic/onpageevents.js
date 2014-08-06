@@ -144,7 +144,7 @@ function PLDR_begin(el) {
 		$.when(slideDownLoadingBar()).done(function(){
 		setTimeout(function() {
 			PLDR_recursion(el);
-		},100);
+		},1000);
 		}).fail(function() {
 		}).always(function() {
 		});
@@ -228,7 +228,7 @@ function foreach_async(PLDR_array,PLDR_foreach,PLDR_arraywalkDone) {
 			done();
 			// PLDR_createJqmPage();
 		// });
-		},100);
+		},1000);
 	}, PLDR_arraywalkDone);
 }
 function PLDR_finalAction() {
